@@ -7,4 +7,5 @@ add_executable(StackAndQueue main.cpp
         src/stack/Stack.h
         src/Node.h
         src/queue/Queue.h
-        src/Collection.h)
+        src/Collection.h
+        Testing.cpp)

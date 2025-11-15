@@ -19,6 +19,10 @@ private:
     Node<T>* top;
 
 public:
+
+    class StackIterator;
+    class StackConstIterator;
+
     Stack() : top(nullptr) {
     }
 
@@ -65,6 +69,48 @@ public:
     size_t getSize() const override;
 
     bool isEmpty() const override;
+
+    StackIterator begin() {
+        return StackIterator(top);
+    }
+
+    StackIterator end() {
+        return StackIterator(nullptr);
+    }
+
+    StackConstIterator cbegin() {
+        return StackConstIterator(top);
+    }
+
+    StackConstIterator cend() {
+        return StackConstIterator(nullptr);
+    }
+
+    class StackIterator : public Collection<T>::Iterator {
+    private:
+        Node<T>* current;
+    public:
+        StackIterator(Node<T>* node) : current(node) {};
+
+        T& operator*() override;
+        T* operator->();
+        StackIterator& operator++() override;
+        bool operator!=(const Collection<T>::Iterator& other) override;
+        bool operator==(const Collection<T>::Iterator& other) override;
+    };
+
+    class StackConstIterator : public Collection<T>::ConstIterator {
+    private:
+        const Node<T>* current;
+    public:
+        StackConstIterator(Node<T>* node) : current(node) {};
+
+        const T& operator*() const override;
+        const T* operator->() const;
+        const StackConstIterator& operator++() const override;
+        bool operator!=(const Collection<T>::ConstIterator& other) const override;
+        bool operator==(const Collection<T>::ConstIterator& other) const override;
+    };
 };
 
 #include "Stack.tpp"

@@ -13,19 +13,21 @@
 template<typename T>
 class Queue : public Collection<T> {
 private:
-    Node<T>* begin;
-    Node<T>* end;
+    Node<T>* _begin;
+    Node<T>* _end;
 public:
+    class QueueIterator;
+    class QueueConstIterator;
 
-    Queue() : begin(nullptr), end(nullptr) {}
+    Queue() : _begin(nullptr), _end(nullptr) {}
 
-    Queue(const Queue<T>& other) : begin(nullptr), end(nullptr) {
+    Queue(const Queue<T>& other) : _begin(nullptr), _end(nullptr) {
         *this = other;
     }
 
-    Queue(Queue<T>&& other) : begin(other.begin), end(other.end) {
-        other.begin = nullptr;
-        other.end = nullptr;
+    Queue(Queue<T>&& other) : _begin(other._begin), _end(other._end) {
+        other._begin = nullptr;
+        other._end = nullptr;
     }
 
     ~Queue() {
@@ -33,11 +35,11 @@ public:
     }
 
     T& getFront() const override {
-        return begin->getValue();
+        return _begin->getValue();
     }
 
     Node<T>* getBegin() const {
-        return begin;
+        return _begin;
     }
 
     Queue<T>& operator=(const Queue<T>& queue);
@@ -54,21 +56,62 @@ public:
     void clear();
 
     Node<T>* getAnEnd() const {
-        return end;
+        return _end;
     }
 
     void setBegin(Node<T>* beginNode) {
-        begin = beginNode;
+        _begin = beginNode;
     }
 
     void setEnd(Node<T>* endNode) {
-        end = endNode;
+        _end = endNode;
+    }
+
+    QueueIterator begin() {
+        return QueueIterator(_begin);
+    }
+
+    QueueIterator end() {
+        return QueueIterator(nullptr);
+    }
+
+    QueueConstIterator cbegin() {
+        return QueueIterator(_begin);
+    }
+
+    QueueConstIterator cend() {
+        return QueueConstIterator(nullptr);
     }
 
     template<typename U>
     friend std::ostream& operator<<(std::ostream& os, const Queue<U>& queue);
     template<typename U>
     friend std::istream& operator>>(std::istream& is, Queue<U>& queue);
+
+    class QueueIterator : public Collection<T>::Iterator {
+    private:
+        Node<T>* current;
+    public:
+        QueueIterator(Node<T>* node) : current(node) {};
+        T& operator*() override;
+        T* operator->();
+        QueueIterator& operator++() override;
+        bool operator!=(const Collection<T>::Iterator &other) override;
+        bool operator==(const Collection<T>::Iterator &other) override;
+    };
+
+    class QueueConstIterator : public Collection<T>::ConstIterator {
+    private:
+        const Node<T>* current;
+    public:
+        QueueConstIterator(const Node<T>* node) : current(node) {};
+
+        const T &operator*() const override;
+        const T* operator->() const;
+        const QueueConstIterator &operator++() const override;
+        bool operator!=(const Collection<T>::ConstIterator &other) const override;
+        bool operator==(const Collection<T>::ConstIterator &other) const override;
+    };
 
 protected:
     void print(std::ostream &os) const override {

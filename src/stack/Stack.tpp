@@ -138,4 +138,58 @@ void Stack<T>::print(std::ostream &os) const {
     os << *this;
 }
 
+template<typename T>
+T &Stack<T>::StackIterator::operator*() {
+    return current->getValue();
+}
+
+template<typename T>
+T* Stack<T>::StackIterator::operator->() {
+    return &current->getValue();
+}
+
+template<typename T>
+Stack<T>::StackIterator &Stack<T>::StackIterator::operator++() {
+    current = current->getNextNode();
+    return *this;
+}
+
+template<typename T>
+bool Stack<T>::StackIterator::operator!=(const Collection<T>::Iterator &other) {
+    auto* otherIter = dynamic_cast<const StackIterator*>(&other);
+    return otherIter && current != otherIter->current;
+}
+
+template<typename T>
+bool Stack<T>::StackIterator::operator==(const Collection<T>::Iterator &other) {
+    return *this == other;
+}
+
+template<typename T>
+const T &Stack<T>::StackConstIterator::operator*() const{
+    return current->getValue();
+}
+
+template<typename T>
+const T* Stack<T>::StackConstIterator::operator->() const{
+    return &current->getValue();
+}
+
+template<typename T>
+const Stack<T>::StackConstIterator &Stack<T>::StackConstIterator::operator++() const{
+    current = current->getNextNode();
+    return *this;
+}
+
+template<typename T>
+bool Stack<T>::StackConstIterator::operator!=(const Collection<T>::ConstIterator &other) const{
+    auto* otherIter = dynamic_cast<const StackConstIterator*>(&other);
+    return otherIter && current != otherIter->current;
+}
+
+template<typename T>
+bool Stack<T>::StackConstIterator::operator==(const Collection<T>::ConstIterator &other) const{
+    return *this == other;
+}
+
 #endif //STACKANDQUEUE_STACK_TPP
