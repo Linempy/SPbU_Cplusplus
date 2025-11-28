@@ -1,7 +1,7 @@
 #ifndef STACKANDQUEUE_QUEUE_TPP
 #define STACKANDQUEUE_QUEUE_TPP
 
-#include "Queue.h"
+#include "../../include/Queue.h"
 
 template<typename T>
 Queue<T>& Queue<T>::operator=(const Queue<T>& queue) {
@@ -50,6 +50,18 @@ Queue<T>& Queue<T>::operator=(Queue<T>&& queue) {
     return *this;
 }
 
+
+template<typename T>
+Queue<T>& Queue<T>::operator=(const Collection<T>& collection) {
+    clear();
+
+    for (auto it = collection.begin(); it != collection.end(); ++it) {
+        push(*it);
+    }
+
+    return *this;
+}
+
 template<typename T>
 bool Queue<T>::isEmpty() const {
     return _begin == nullptr;
@@ -84,7 +96,6 @@ void Queue<T>::push(const T &value) {
         _end = newNode;
     }
 }
-
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const Queue<T>& queue) {
@@ -138,7 +149,49 @@ size_t Queue<T>::getSize() const{
 
 
 template<typename T>
-T &Queue<T>::QueueIterator::operator*() {
+void Queue<T>::push(T&& value) {
+    Node<T>* newNode = new Node<T>(std::move(value));
+    if (isEmpty()) {
+        _begin = newNode;
+        _end = newNode;
+    } else {
+        _end->setNextNode(newNode);
+        _end = newNode;
+    }
+}
+
+template<typename T>
+typename Queue<T>::Iterator Queue<T>::begin() {
+    return Iterator(new QueueIterator(_begin));
+}
+
+template<typename T>
+typename Queue<T>::Iterator Queue<T>::end() {
+    return Iterator(new QueueIterator(nullptr));
+}
+
+template<typename T>
+typename Queue<T>::ConstIterator Queue<T>::begin() const {
+    return ConstIterator(new QueueConstIterator(_begin));
+}
+
+template<typename T>
+typename Queue<T>::ConstIterator Queue<T>::end() const {
+    return ConstIterator(new QueueConstIterator(nullptr));
+}
+
+template<typename T>
+typename Queue<T>::ConstIterator Queue<T>::cbegin() const {
+    return ConstIterator(new QueueConstIterator(_begin));
+}
+
+template<typename T>
+typename Queue<T>::ConstIterator Queue<T>::cend() const {
+    return ConstIterator(new QueueConstIterator(nullptr));
+}
+
+template<typename T>
+T& Queue<T>::QueueIterator::operator*() {
     return current->getValue();
 }
 
@@ -149,23 +202,44 @@ T* Queue<T>::QueueIterator::operator->() {
 
 template<typename T>
 Queue<T>::QueueIterator &Queue<T>::QueueIterator::operator++() {
-    current = current->getNextNode();
+    if (current) {
+        current = current->getNextNode();
+    }
     return *this;
 }
 
 template<typename T>
-bool Queue<T>::QueueIterator::operator!=(const Collection<T>::Iterator &other) {
-    auto* otherIter = dynamic_cast<const QueueIterator*>(&other);
-    return otherIter && current != otherIter->current;
+bool Queue<T>::QueueIterator::operator!=(const Collection<T>::IteratorBase &other) const {
+    return !(*this == other);
 }
 
 template<typename T>
-bool Queue<T>::QueueIterator::operator==(const Collection<T>::Iterator &other) {
-    return *this == other;
+bool Queue<T>::QueueIterator::operator==(const Collection<T>::IteratorBase &other) const {
+    auto* otherIter = dynamic_cast<const QueueIterator*>(&other);
+    return otherIter && current == otherIter->current;
+}
+
+template<typename T>
+bool Queue<T>::QueueIterator::operator!=(const Collection<T>::ConstIteratorBase &other) const {
+    return !(*this == other);
+}
+
+template<typename T>
+bool Queue<T>::QueueIterator::operator==(const Collection<T>::ConstIteratorBase &other) const {
+    auto* otherIter = dynamic_cast<const QueueConstIterator*>(&other);
+    return otherIter && current == otherIter->current;
+}
+
+template<typename T>
+typename Collection<T>::IteratorBase* Queue<T>::QueueIterator::clone() const {
+    return new QueueIterator(current);
 }
 
 template<typename T>
 const T &Queue<T>::QueueConstIterator::operator*() const {
+    if (!current) {
+        throw std::runtime_error("Разыменование null const итератора");
+    }
     return current->getValue();
 }
 
@@ -175,21 +249,41 @@ const T* Queue<T>::QueueConstIterator::operator->() const {
 }
 
 template<typename T>
-const Queue<T>::QueueConstIterator &Queue<T>::QueueConstIterator::operator++() const {
-    current = current->getNextNode();
+Queue<T>::QueueConstIterator &Queue<T>::QueueConstIterator::operator++() {
+    if (current) {
+        current = current->getNextNode();
+    }
     return *this;
 }
 
 template<typename T>
-bool Queue<T>::QueueConstIterator::operator!=(const Collection<T>::ConstIterator &other) const {
-    auto* otherIter = dynamic_cast<const QueueConstIterator*>(&other);
-    return otherIter && current != otherIter->current;
+bool Queue<T>::QueueConstIterator::operator!=(const Collection<T>::ConstIteratorBase& other) const {
+    return !(*this == other);
 }
 
 template<typename T>
-bool Queue<T>::QueueConstIterator::operator==(const Collection<T>::ConstIterator &other) const {
-    return *this == other;
+bool Queue<T>::QueueConstIterator::operator==(const Collection<T>::ConstIteratorBase& other) const {
+    auto* otherIter = dynamic_cast<const QueueConstIterator*>(&other);
+    return otherIter && current == otherIter->current;
 }
+
+template<typename T>
+bool Queue<T>::QueueConstIterator::operator!=(const Collection<T>::IteratorBase& other) const {
+    return !(*this == other);
+
+}
+
+template<typename T>
+bool Queue<T>::QueueConstIterator::operator==(const Collection<T>::IteratorBase& other) const {
+    auto* otherIter = dynamic_cast<const QueueIterator*>(&other);
+    return otherIter && current == otherIter->current;
+}
+
+template<typename T>
+typename Collection<T>::ConstIteratorBase* Queue<T>::QueueConstIterator::clone() const {
+    return new QueueConstIterator(current);
+}
+
 
 
 #endif //STACKANDQUEUE_QUEUE_TPP

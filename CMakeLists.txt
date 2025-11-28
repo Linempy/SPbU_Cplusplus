@@ -3,9 +3,26 @@ project(StackAndQueue)
 
 set(CMAKE_CXX_STANDARD 20)
 
+add_subdirectory(googletest)
+
 add_executable(StackAndQueue main.cpp
-        src/stack/Stack.h
-        src/Node.h
-        src/queue/Queue.h
-        src/Collection.h
+        include/Stack.h
+        include/Node.h
+        include/Queue.h
+        include/Collection.h
         Testing.cpp)
+
+include_directories(include)
+
+add_executable(tests
+        include/Stack.h
+        include/Node.h
+        include/Queue.h
+        include/Collection.h
+        src/Collection.tpp
+        src/stack/Stack.tpp
+        src/queue/Queue.tpp
+        test/test.cpp
+)
+
+target_link_libraries(tests gtest)

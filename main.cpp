@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
-#include "src/stack/Stack.h"
-#include "src/queue/Queue.h"
+#include "../include/Stack.h"
+#include "../include/Queue.h"
 
 int main() {
 //    Stack<int> myFirstStack = Stack<int>();

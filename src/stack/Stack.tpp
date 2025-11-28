@@ -1,7 +1,8 @@
 #ifndef STACKANDQUEUE_STACK_TPP
 #define STACKANDQUEUE_STACK_TPP
 
-#include "Stack.h"
+#include "../../include/Stack.h"
+#include "../../include/Queue.h"
 
 template<typename T>
 Stack<T>& Stack<T>::operator=(const Stack<T>& stack) {
@@ -48,11 +49,12 @@ Stack<T>& Stack<T>::operator=(Stack<T>&& stack) {
 
 template<typename T>
 Stack<T>& Stack<T>::operator=(const Collection<T>& collection) {
-    const auto* other = dynamic_cast<const Stack<T>*>(&collection);
-    if (!other) {
-        throw std::invalid_argument("Нельзя привести данный тип к Stack");
+    clear();
+
+    for (auto it = collection.begin(); it != collection.end(); ++it) {
+        push(*it);
     }
-    *this = *other;
+
     return *this;
 }
 
@@ -97,7 +99,6 @@ std::ostream& operator<<(std::ostream& os, const Stack<T>& stack) {
 
 template<typename T>
 std::istream& operator>>(std::istream& is, Stack<T>& stack) {
-    stack.clear();
     T value;
     while (is >> value) {
         stack.push(value);
@@ -134,8 +135,33 @@ bool Stack<T>::isEmpty() const {
 }
 
 template<typename T>
-void Stack<T>::print(std::ostream &os) const {
-    os << *this;
+typename Stack<T>::Iterator Stack<T>::begin() {
+    return Iterator(new StackIterator(top));
+}
+
+template<typename T>
+typename Stack<T>::Iterator Stack<T>::end() {
+    return Iterator(new StackIterator(nullptr));
+}
+
+template<typename T>
+typename Stack<T>::ConstIterator Stack<T>::begin() const {
+    return ConstIterator(new StackConstIterator(top));
+}
+
+template<typename T>
+typename Stack<T>::ConstIterator Stack<T>::end() const {
+    return ConstIterator(new StackConstIterator(nullptr));
+}
+
+template<typename T>
+typename Stack<T>::ConstIterator Stack<T>::cbegin() const {
+    return ConstIterator(new StackConstIterator(top));
+}
+
+template<typename T>
+typename Stack<T>::ConstIterator Stack<T>::cend() const {
+    return ConstIterator(new StackConstIterator(nullptr));
 }
 
 template<typename T>
@@ -150,46 +176,87 @@ T* Stack<T>::StackIterator::operator->() {
 
 template<typename T>
 Stack<T>::StackIterator &Stack<T>::StackIterator::operator++() {
-    current = current->getNextNode();
+    if (current) {
+        current = current->getNextNode();
+    }
     return *this;
 }
 
 template<typename T>
-bool Stack<T>::StackIterator::operator!=(const Collection<T>::Iterator &other) {
-    auto* otherIter = dynamic_cast<const StackIterator*>(&other);
-    return otherIter && current != otherIter->current;
+bool Stack<T>::StackIterator::operator!=(const Collection<T>::IteratorBase& other) const {
+    return !(*this == other);
 }
 
 template<typename T>
-bool Stack<T>::StackIterator::operator==(const Collection<T>::Iterator &other) {
-    return *this == other;
+bool Stack<T>::StackIterator::operator==(const Collection<T>::IteratorBase& other) const {
+    auto derived = dynamic_cast<const StackIterator*>(&other);
+    return derived && current == derived->current;
 }
 
 template<typename T>
-const T &Stack<T>::StackConstIterator::operator*() const{
+bool Stack<T>::StackIterator::operator==(const typename Collection<T>::ConstIteratorBase& other) const {
+    auto derived = dynamic_cast<const StackConstIterator*>(&other);
+    return derived && current == derived->current;
+}
+
+template<typename T>
+bool Stack<T>::StackIterator::operator!=(const typename Collection<T>::ConstIteratorBase& other) const {
+    return !(*this == other);
+
+}
+
+template<typename T>
+typename Collection<T>::IteratorBase* Stack<T>::StackIterator::clone() const {
+    return new StackIterator(current);
+}
+
+template<typename T>
+Collection<T>::ConstIteratorBase* Stack<T>::StackConstIterator::clone() const {
+    return new StackConstIterator(current);
+}
+
+template<typename T>
+const T &Stack<T>::StackConstIterator::operator*() const {
+    if (!current) {
+        throw std::runtime_error("Разыменование null const итератора");
+    }
     return current->getValue();
 }
 
 template<typename T>
-const T* Stack<T>::StackConstIterator::operator->() const{
+const T* Stack<T>::StackConstIterator::operator->() const {
     return &current->getValue();
 }
 
 template<typename T>
-const Stack<T>::StackConstIterator &Stack<T>::StackConstIterator::operator++() const{
-    current = current->getNextNode();
+typename Stack<T>::StackConstIterator &Stack<T>::StackConstIterator::operator++() {
+    if (current) {
+        current = current->getNextNode();
+    }
     return *this;
 }
 
 template<typename T>
-bool Stack<T>::StackConstIterator::operator!=(const Collection<T>::ConstIterator &other) const{
-    auto* otherIter = dynamic_cast<const StackConstIterator*>(&other);
-    return otherIter && current != otherIter->current;
+bool Stack<T>::StackConstIterator::operator!=(const Collection<T>::ConstIteratorBase& other) const {
+    return !(*this == other);
 }
 
 template<typename T>
-bool Stack<T>::StackConstIterator::operator==(const Collection<T>::ConstIterator &other) const{
-    return *this == other;
+bool Stack<T>::StackConstIterator::operator==(const Collection<T>::ConstIteratorBase& other) const {
+    auto derived = dynamic_cast<const StackConstIterator*>(&other);
+    return derived && current == derived->current;
+}
+
+template<typename T>
+bool Stack<T>::StackConstIterator::operator==(const typename Collection<T>::IteratorBase& other) const {
+    auto derived = dynamic_cast<const StackIterator*>(&other);
+    return derived && current == derived->current;
+}
+
+template<typename T>
+bool Stack<T>::StackConstIterator::operator!=(const typename Collection<T>::IteratorBase& other) const {
+    return !(*this == other);
+
 }
 
 #endif //STACKANDQUEUE_STACK_TPP
