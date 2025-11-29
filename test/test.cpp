@@ -239,7 +239,6 @@ TEST(ContainerTest, BaseContainer)
     Collection<int>& bs = s;
     Collection<int>& bq = q;
     const Collection<int>& cs = s;
-    const Collection<int>& cq = q;
 
 
 
@@ -261,7 +260,6 @@ TEST(ContainerTest, BaseContainer)
     idx = 0;
     for (auto& it : cs) EXPECT_EQ(it, expected_s_after[idx++]);
 
-    int expected_queue[] = {10, 20, 30};
     idx = 0;
     for (auto& it : bq) EXPECT_EQ(it, expected_q_after[idx++]);
 
