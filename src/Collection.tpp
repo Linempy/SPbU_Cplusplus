@@ -56,13 +56,11 @@ typename Collection<T>::Iterator& Collection<T>::Iterator::operator=(const Const
 
 template<typename T>
 typename Collection<T>::Iterator::reference Collection<T>::Iterator::operator*() {
-    Iterator::checkOnNullIterator();
     return iterator->operator*();
 }
 
 template<typename T>
 typename Collection<T>::Iterator::pointer Collection<T>::Iterator::operator->() {
-    Iterator::checkOnNullIterator();
     return iterator->operator->();
 }
 
@@ -159,13 +157,11 @@ typename Collection<T>::ConstIterator& Collection<T> ::ConstIterator::operator=(
 
 template<typename T>
 typename Collection<T>::ConstIterator::reference Collection<T> ::ConstIterator::operator*() const {
-    ConstIterator::checkOnNullConstIterator();
     return iterator->operator*();
 }
 
 template<typename T>
 typename Collection<T>::ConstIterator::pointer Collection<T> ::ConstIterator::operator->() const {
-    ConstIterator::checkOnNullConstIterator();
     return iterator->operator->();
 }
 
@@ -233,20 +229,6 @@ std::istream& operator>>(std::istream& is, Collection<T>& collection) {
         is.clear();
     }
     return is;
-}
-
-template<typename T>
-void Collection<T>::Iterator::checkOnNullIterator() const {
-    if (!iterator) {
-        throw std::runtime_error("Разыменование null итератора");
-    }
-}
-
-template<typename T>
-void Collection<T>::ConstIterator::checkOnNullConstIterator() const {
-    if (!iterator) {
-        throw std::runtime_error("Разыменование null const итератора");
-    }
 }
 
 #endif // COLLECTION_TPP

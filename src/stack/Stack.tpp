@@ -189,14 +189,16 @@ bool Stack<T>::StackIterator::operator!=(const Collection<T>::IteratorBase& othe
 
 template<typename T>
 bool Stack<T>::StackIterator::operator==(const Collection<T>::IteratorBase& other) const {
-    auto derived = dynamic_cast<const StackIterator*>(&other);
-    return derived && current == derived->current;
+    if (typeid(other) != typeid(StackIterator)) return false;
+    const StackIterator* derived = static_cast<const StackIterator*>(&other);
+    return current == derived->current;
 }
 
 template<typename T>
 bool Stack<T>::StackIterator::operator==(const typename Collection<T>::ConstIteratorBase& other) const {
-    auto derived = dynamic_cast<const StackConstIterator*>(&other);
-    return derived && current == derived->current;
+    if (typeid(other) != typeid(StackConstIterator)) return false;
+    const StackConstIterator* derived = static_cast<const StackConstIterator*>(&other);
+    return current == derived->current;
 }
 
 template<typename T>
@@ -217,9 +219,6 @@ Collection<T>::ConstIteratorBase* Stack<T>::StackConstIterator::clone() const {
 
 template<typename T>
 const T &Stack<T>::StackConstIterator::operator*() const {
-    if (!current) {
-        throw std::runtime_error("Разыменование null const итератора");
-    }
     return current->getValue();
 }
 
@@ -243,14 +242,16 @@ bool Stack<T>::StackConstIterator::operator!=(const Collection<T>::ConstIterator
 
 template<typename T>
 bool Stack<T>::StackConstIterator::operator==(const Collection<T>::ConstIteratorBase& other) const {
-    auto derived = dynamic_cast<const StackConstIterator*>(&other);
-    return derived && current == derived->current;
+    if (typeid(other) != typeid(StackConstIterator)) return false;
+    const StackConstIterator* derived = static_cast<const StackConstIterator*>(&other);
+    return current == derived->current;
 }
 
 template<typename T>
 bool Stack<T>::StackConstIterator::operator==(const typename Collection<T>::IteratorBase& other) const {
-    auto derived = dynamic_cast<const StackIterator*>(&other);
-    return derived && current == derived->current;
+    if (typeid(other) != typeid(StackIterator)) return false;
+    const StackIterator* derived = static_cast<const StackIterator*>(&other);
+    return current == derived->current;
 }
 
 template<typename T>

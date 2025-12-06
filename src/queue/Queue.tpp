@@ -115,7 +115,6 @@ std::ostream& operator<<(std::ostream& os, const Queue<T>& queue) {
 
 template<typename T>
 std::istream& operator>>(std::istream& is, Queue<T>& queue) {
-    queue.clear();
     T value;
     while (is >> value) {
         queue.push(value);
@@ -215,8 +214,9 @@ bool Queue<T>::QueueIterator::operator!=(const Collection<T>::IteratorBase &othe
 
 template<typename T>
 bool Queue<T>::QueueIterator::operator==(const Collection<T>::IteratorBase &other) const {
-    auto* otherIter = dynamic_cast<const QueueIterator*>(&other);
-    return otherIter && current == otherIter->current;
+    if (typeid(*this) != typeid(other)) return false;
+    const QueueIterator* otherIter = static_cast<const QueueIterator*>(&other);
+    return current == otherIter->current;
 }
 
 template<typename T>
@@ -226,8 +226,9 @@ bool Queue<T>::QueueIterator::operator!=(const Collection<T>::ConstIteratorBase 
 
 template<typename T>
 bool Queue<T>::QueueIterator::operator==(const Collection<T>::ConstIteratorBase &other) const {
-    auto* otherIter = dynamic_cast<const QueueConstIterator*>(&other);
-    return otherIter && current == otherIter->current;
+    if (typeid(other) != typeid(QueueConstIterator)) return false;
+    const QueueConstIterator* otherIter = static_cast<const QueueConstIterator*>(&other);
+    return current == otherIter->current;
 }
 
 template<typename T>
@@ -237,9 +238,6 @@ typename Collection<T>::IteratorBase* Queue<T>::QueueIterator::clone() const {
 
 template<typename T>
 const T &Queue<T>::QueueConstIterator::operator*() const {
-    if (!current) {
-        throw std::runtime_error("Разыменование null const итератора");
-    }
     return current->getValue();
 }
 
@@ -263,8 +261,9 @@ bool Queue<T>::QueueConstIterator::operator!=(const Collection<T>::ConstIterator
 
 template<typename T>
 bool Queue<T>::QueueConstIterator::operator==(const Collection<T>::ConstIteratorBase& other) const {
-    auto* otherIter = dynamic_cast<const QueueConstIterator*>(&other);
-    return otherIter && current == otherIter->current;
+    if (typeid(*this) != typeid(other)) return false;
+    const QueueConstIterator* otherIter = static_cast<const QueueConstIterator*>(&other);
+    return current == otherIter->current;
 }
 
 template<typename T>
@@ -275,15 +274,14 @@ bool Queue<T>::QueueConstIterator::operator!=(const Collection<T>::IteratorBase&
 
 template<typename T>
 bool Queue<T>::QueueConstIterator::operator==(const Collection<T>::IteratorBase& other) const {
-    auto* otherIter = dynamic_cast<const QueueIterator*>(&other);
-    return otherIter && current == otherIter->current;
+    if (typeid(other) != typeid(QueueIterator)) return false;
+    const QueueIterator* otherIter = static_cast<const QueueIterator*>(&other);
+    return current == otherIter->current;
 }
 
 template<typename T>
 typename Collection<T>::ConstIteratorBase* Queue<T>::QueueConstIterator::clone() const {
     return new QueueConstIterator(current);
 }
-
-
 
 #endif //STACKANDQUEUE_QUEUE_TPP

@@ -106,7 +106,6 @@ public:
         bool operator!=(const ConstIterator& other) const;
 
     private:
-        void checkOnNullIterator() const;
         friend class ConstIterator;
     };
 
@@ -142,7 +141,6 @@ public:
         bool operator==(const Iterator& other) const;
         bool operator!=(const Iterator& other) const;
     private:
-        void checkOnNullConstIterator() const;
         friend class Iterator;
     };
 
