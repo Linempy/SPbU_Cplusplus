@@ -265,7 +265,7 @@ TEST(ContainerTest, BaseContainer)
 
     idx = 0;
     for (const auto& it : bq) EXPECT_EQ(it, expected_q_after[idx++]);
-
+        
     idx = 0;
     for (auto& it : bq) EXPECT_EQ(it, expected_q_after[idx++]);
 

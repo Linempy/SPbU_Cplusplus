@@ -5,7 +5,16 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -Werror -pedantic")
 
-add_subdirectory(googletest)
+include(FetchContent)
+
+FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG main
+)
+set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
 add_executable(StackAndQueue main.cpp
         include/Stack.h
@@ -27,4 +36,8 @@ add_executable(tests
         test/test.cpp
 )
 
-target_link_libraries(tests gtest)
+target_link_libraries(tests PRIVATE
+        GTest::gtest_main
+)
+enable_testing()
+add_test(NAME StackAndQueueTests COMMAND tests)
