@@ -16,7 +16,7 @@ set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(StackAndQueue main.cpp
+add_executable(StackAndQueue
         include/Stack.h
         include/Node.h
         include/Queue.h
