@@ -21,7 +21,8 @@ add_executable(StackAndQueue
         include/Node.h
         include/Queue.h
         include/Collection.h
-        )
+        main.cpp
+)
 
 include_directories(include)
 
