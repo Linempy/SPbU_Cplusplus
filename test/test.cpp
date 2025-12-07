@@ -2,6 +2,7 @@
 #include "../src/queue/Queue.tpp"
 
 #include "gtest/gtest.h"
+#include <algorithm>
 
 TEST(StackTest, StackIterator)
 {
